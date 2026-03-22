@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Support Hub - Teacher Grievances</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <!-- Top Navbar -->
+  <nav class="navbar">
+    <div class="navbar-brand">STUDENT SUPPORT HUB</div>
+    <div class="navbar-links">
+      <a href="/teacher-dashboard">Home</a>
+      <a href="/teacher-grievances" class="active">Grievances</a>
+      <a href="/teacher-notes">Notes</a>
+      <button class="btn-logout" onclick="logout()">Log Out</button>
+    </div>
+  </nav>
+
+  <div class="page-content">
+    <div class="page-header">
+      <h1>Grievances</h1>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="search-bar">
+      <select id="filter-status" onchange="fetchTeacherGrievances()">
+        <option value="">Sort by status</option>
+        <option value="Submitted">Submitted</option>
+        <option value="Under Review">Under Review</option>
+        <option value="Resolved">Resolved</option>
+      </select>
+      <select id="filter-category" onchange="fetchTeacherGrievances()">
+        <option value="">sort by category</option>
+        <option value="Academic">Academic</option>
+        <option value="Infrastructure">Infrastructure</option>
+        <option value="Hostel">Hostel</option>
+        <option value="Faculty">Faculty</option>
+        <option value="Examination">Examination</option>
+        <option value="Ragging">Ragging</option>
+        <option value="Other">Other</option>
+      </select>
+      <select id="filter-priority" onchange="fetchTeacherGrievances()">
+        <option value="">sort by priority</option>
+        <option value="Low">Low</option>
+        <option value="Medium">Medium</option>
+        <option value="High">High</option>
+        <option value="Urgent">Urgent</option>
+      </select>
+    </div>
+
+    <div id="grievance-alert"></div>
+
+    <div id="grievance-list">
+      <div class="empty-state">
+        <div class="icon">&#128203;</div>
+        <p>No grievances submitted yet.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reply Modal -->
+  <div class="modal-overlay" id="reply-modal">
+    <div class="modal">
+      <h2>Reply to Grievance</h2>
+      <div id="reply-form-alert"></div>
+      <div id="reply-grievance-info" style="margin-bottom: 16px;"></div>
+      <form id="reply-form" onsubmit="submitReply(event)">
+        <input type="hidden" id="reply-grievance-id">
+        <div class="form-group">
+          <label for="reply-text">Your Reply</label>
+          <textarea id="reply-text" placeholder="Write your response..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="reply-status">Update Status</label>
+          <select id="reply-status">
+            <option value="Under Review">Under Review</option>
+            <option value="Resolved">Resolved</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" onclick="closeReplyModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-submit-reply">REPLY</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/teacher.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Support Hub - Login</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-card">
+      <h1>Student Support Hub</h1>
+
+      <!-- Role Toggle -->
+      <div class="role-toggle">
+        <button id="role-student" class="active" onclick="selectRole('student')">Student</button>
+        <button id="role-teacher" onclick="selectRole('teacher')">Teacher</button>
+      </div>
+
+      <div id="login-alert"></div>
+
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Enter your password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-login">LOGIN</button>
+      </form>
+
+      <div class="auth-link">
+        Don't have an Account? <a href="/register">Register Here</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+</body>
+</html>

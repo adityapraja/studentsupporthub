@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Support Hub - Register</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-card">
+      <h1>Create Account</h1>
+
+      <!-- Role Toggle -->
+      <div class="role-toggle">
+        <button id="role-student" class="active" onclick="selectRole('student')">Student</button>
+        <button id="role-teacher" onclick="selectRole('teacher')">Teacher</button>
+      </div>
+
+      <div id="register-alert"></div>
+
+      <form id="register-form" onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" placeholder="Enter your full name" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="Enter your college email" required>
+        </div>
+        <div class="form-group">
+          <label for="collegeId">College ID</label>
+          <input type="text" id="collegeId" placeholder="Enter your college ID">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="semester">Semester</label>
+            <select id="semester">
+              <option value="">Select</option>
+              <option value="I">Semester I</option>
+              <option value="II">Semester II</option>
+              <option value="III">Semester III</option>
+              <option value="IV">Semester IV</option>
+              <option value="V">Semester V</option>
+              <option value="VI">Semester VI</option>
+              <option value="VII">Semester VII</option>
+              <option value="VIII">Semester VIII</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="branch">Branch</label>
+            <select id="branch">
+              <option value="">Select</option>
+              <option value="CSE">CSE</option>
+              <option value="INFT">INFT</option>
+              <option value="ECE">ECE</option>
+              <option value="EEE">EEE</option>
+              <option value="ME">ME</option>
+              <option value="CE">CE</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" placeholder="Enter your phone number">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Create a password" required minlength="6">
+          </div>
+          <div class="form-group">
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" id="confirmPassword" placeholder="Confirm password" required>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-register">REGISTER</button>
+      </form>
+
+      <div class="auth-link">
+        Already have an account? <a href="/">Login Here</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+</body>
+</html>

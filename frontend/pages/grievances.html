@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Support Hub - Grievances</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <!-- Top Navbar -->
+  <nav class="navbar">
+    <div class="navbar-brand">STUDENT SUPPORT HUB</div>
+    <div class="navbar-links">
+      <a href="/student-dashboard">Home</a>
+      <a href="/alumni">Alumni</a>
+      <a href="/grievances" class="active">Grievances</a>
+      <a href="/notes">Notes</a>
+      <button class="btn-logout" onclick="logout()">Log Out</button>
+    </div>
+  </nav>
+
+  <div class="page-content">
+    <div class="page-header">
+      <h1>My Grievances</h1>
+      <button class="btn btn-primary" id="btn-new-complaint" onclick="toggleGrievanceForm()">New Complaint</button>
+    </div>
+
+    <!-- Submit Grievance Form -->
+    <div class="grievance-form-card" id="grievance-form-section" style="display: none;">
+      <h3>Submit Grievances</h3>
+      <div id="grievance-form-alert"></div>
+      <form id="grievance-form" onsubmit="submitGrievance(event)">
+        <div class="form-group">
+          <label for="grievance-title">Title</label>
+          <input type="text" id="grievance-title" placeholder="Brief title of your complaint" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="grievance-category">Category</label>
+            <select id="grievance-category" required>
+              <option value="">Select category</option>
+              <option value="Academic">Academic</option>
+              <option value="Infrastructure">Infrastructure</option>
+              <option value="Hostel">Hostel</option>
+              <option value="Faculty">Faculty</option>
+              <option value="Examination">Examination</option>
+              <option value="Ragging">Ragging</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="grievance-priority">Priority</label>
+            <select id="grievance-priority">
+              <option value="Low">Low</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="High">High</option>
+              <option value="Urgent">Urgent</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="grievance-file">Attach Proof</label>
+          <input type="file" id="grievance-file">
+        </div>
+        <div class="form-group">
+          <label for="grievance-desc">Description</label>
+          <textarea id="grievance-desc" placeholder="Describe your grievance in detail" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg" id="btn-submit-grievance">SUBMIT</button>
+      </form>
+    </div>
+
+    <!-- Grievance Alert -->
+    <div id="grievance-alert"></div>
+
+    <!-- History -->
+    <h3 style="margin-bottom: 16px; font-weight: 700; color: var(--gray-600);">History:</h3>
+    <div id="grievance-list">
+      <div class="empty-state">
+        <div class="icon">&#128203;</div>
+        <p>No grievances yet. Click "New Complaint" to submit one.</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/student.js"></script>
+</body>
+</html>

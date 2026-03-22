@@ -1,0 +1,5 @@
+node_modules/
+.env
+uploads/
+backend/config/google-credentials.json
+backend/config/firebase-credentials.json

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Support Hub - Alumni</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <!-- Top Navbar -->
+  <nav class="navbar">
+    <div class="navbar-brand">STUDENT SUPPORT HUB</div>
+    <div class="navbar-links">
+      <a href="/student-dashboard">Home</a>
+      <a href="/alumni" class="active">Alumni</a>
+      <a href="/grievances">Grievances</a>
+      <a href="/notes">Notes</a>
+      <button class="btn-logout" onclick="logout()">Log Out</button>
+    </div>
+  </nav>
+
+  <div class="page-content">
+    <div class="page-header">
+      <h1>Alumni</h1>
+    </div>
+
+    <div class="search-bar" style="margin-bottom: 24px;">
+      <input type="text" id="alumni-search" placeholder="Search alumni..." oninput="fetchAlumni()">
+    </div>
+
+    <div class="alumni-grid" id="alumni-grid">
+      <div class="empty-state" style="grid-column: 1/-1;">
+        <div class="icon">&#127891;</div>
+        <p>No alumni data available.</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/student.js"></script>
+</body>
+</html>
