@@ -20,7 +20,8 @@ router.post('/', auth, requireRole('student'), upload.single('attachment'), asyn
     let attachmentLink = null;
     if (req.file) {
       try {
-        const driveResult = await uploadToGoogleDrive(req.file);
+        // Pass role so Drive uploads go to the correct subfolder
+        const driveResult = await uploadToGoogleDrive(req.file, req.user.role);
         attachmentLink = driveResult.webViewLink;
       } catch (driveErr) {
         console.error('Google Drive upload failed:', driveErr);
