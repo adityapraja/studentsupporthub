@@ -20,7 +20,7 @@ router.post('/', auth, upload.single('file'), async (req, res) => {
       return res.status(400).json({ error: 'File is required' });
     }
 
-    const driveResult = await uploadToGoogleDrive(req.file);
+    const driveResult = await uploadToGoogleDrive(req.file, req.user.role);
 
     const noteData = {
       title,
@@ -32,6 +32,7 @@ router.post('/', auth, upload.single('file'), async (req, res) => {
       uploaderName: req.user.name,
       fileLink: driveResult.webViewLink,
       type: req.user.role,
+      isOfficial: req.user.role === 'teacher',
       createdAt: new Date().toISOString()
     };
 
