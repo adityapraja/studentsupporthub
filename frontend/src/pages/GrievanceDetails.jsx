@@ -88,8 +88,8 @@ const GrievanceDetails = () => {
 
         {grievance.attachmentLink && (
           <div style={{ marginTop: '24px' }}>
-            <a href={grievance.attachmentLink} target="_blank" rel="noreferrer" className="btn btn-outline" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '13px', padding: '8px 16px' }}>
-              <Paperclip size={16} /> View Attached File
+            <a href={grievance.attachmentLink} target="_blank" rel="noopener noreferrer" className="btn btn-outline" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '13px', padding: '8px 16px' }}>
+              <Paperclip size={16} /> Open Attachment
             </a>
           </div>
         )}

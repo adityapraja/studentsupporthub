@@ -2,7 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const { auth, requireRole } = require('../middleware/auth');
 const { db } = require('../config/firebase');
-const { uploadToGoogleDrive } = require('../utils/googleDrive');
+const { uploadToCloudinary } = require('../utils/cloudinary');
 const { sendGrievanceNotification } = require('../utils/mailer');
 
 const router = express.Router();
@@ -20,11 +20,11 @@ router.post('/', auth, requireRole('student'), upload.single('attachment'), asyn
     let attachmentLink = null;
     if (req.file) {
       try {
-        // Pass role so Drive uploads go to the correct subfolder
-        const driveResult = await uploadToGoogleDrive(req.file, req.user.role);
-        attachmentLink = driveResult.webViewLink;
-      } catch (driveErr) {
-        console.error('Google Drive upload failed:', driveErr);
+        const cloudinaryResult = await uploadToCloudinary(req.file, req.user.role, 'grievances');
+        attachmentLink = cloudinaryResult.secureUrl;
+      } catch (uploadErr) {
+        console.error('Cloudinary upload failed:', uploadErr);
+        return res.status(500).json({ error: 'Attachment upload failed. Please try again.' });
       }
     }
 

@@ -1,9 +1,14 @@
 const fs = require('fs');
 const cloudinary = require('cloudinary').v2;
 
-function getNotesFolder(userRole) {
-  // Keep uploads organized per role
-  return userRole === 'teacher' ? 'notes/Teachers' : 'notes/Students';
+function getUploadFolder(uploadType, userRole) {
+  const roleFolder = userRole === 'teacher' ? 'Teachers' : 'Students';
+
+  if (uploadType === 'grievances') {
+    return `grievances/${roleFolder}`;
+  }
+
+  return `notes/${roleFolder}`;
 }
 
 function assertCloudinaryConfigured() {
@@ -13,7 +18,7 @@ function assertCloudinaryConfigured() {
   }
 }
 
-async function uploadToCloudinary(file, userRole) {
+async function uploadToCloudinary(file, userRole, uploadType = 'notes') {
   assertCloudinaryConfigured();
 
   cloudinary.config({
@@ -22,16 +27,20 @@ async function uploadToCloudinary(file, userRole) {
     api_secret: process.env.CLOUDINARY_API_SECRET
   });
 
-  const folder = getNotesFolder(userRole);
+  const folder = getUploadFolder(uploadType, userRole);
 
-  // Use raw so PDFs/DOCs/PPTs upload reliably (not just images)
-  const result = await cloudinary.uploader.upload(file.path, {
-    resource_type: 'raw',
-    folder
-  });
-
-  // Clean up temporary local file created by multer
-  fs.unlinkSync(file.path);
+  let result;
+  try {
+    // Use raw so PDFs/DOCs/PPTs upload reliably (not just images)
+    result = await cloudinary.uploader.upload(file.path, {
+      resource_type: 'raw',
+      folder
+    });
+  } finally {
+    if (file?.path && fs.existsSync(file.path)) {
+      fs.unlinkSync(file.path);
+    }
+  }
 
   return {
     secureUrl: result.secure_url || result.url,

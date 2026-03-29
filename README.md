@@ -19,7 +19,7 @@ A comprehensive college platform for managing grievances, sharing notes, and con
 
 #### **2. Grievance Management System**
 - Submit grievances with detailed descriptions and attachments
-- Attach files to grievance submissions (stored on Google Drive)
+- Attach files to grievance submissions (stored on Cloudinary)
 - Track grievance status (Submitted, In Progress, Resolved, Closed)
 - Priority levels (Low, Medium, High)
 - Teacher/Admin replies to grievances
@@ -31,7 +31,7 @@ A comprehensive college platform for managing grievances, sharing notes, and con
 - Support for subject-specific organization
 - Semester-based classification (INFT department only)
 - Tag-based organization and search
-- Automatic file hosting on Google Drive
+- Automatic file hosting on Cloudinary
 - Distinguish between student and official (teacher) notes
 - File management and versioning
 
@@ -44,7 +44,7 @@ A comprehensive college platform for managing grievances, sharing notes, and con
 
 #### **5. File Management**
 - Secure file uploads with multer
-- Integration with Google Drive for reliable file storage
+- Integration with Cloudinary for reliable file storage
 - Automatic file cleanup and management
 - Support for various file types
 
@@ -55,7 +55,7 @@ A comprehensive college platform for managing grievances, sharing notes, and con
 - **Framework:** Express.js v5.2.1
 - **Database:** Firebase Firestore
 - **Authentication:** Firebase Admin SDK, JWT
-- **File Storage:** Google Drive API
+- **File Storage:** Cloudinary (for notes and grievance attachments)
 - **Email Service:** Nodemailer
 - **Security:** bcryptjs, CORS
 
@@ -70,7 +70,7 @@ A comprehensive college platform for managing grievances, sharing notes, and con
 
 ### Infrastructure
 - **Authentication Provider:** Firebase
-- **File Storage:** Google Drive
+- **File Storage:** Cloudinary
 - **Email Provider:** Nodemailer (supports SMTP)
 
 ## Project Structure
@@ -272,7 +272,7 @@ npm run build
   "priority": "string (Low|Medium|High)",
   "status": "string (Submitted|In Progress|Resolved|Closed)",
   "submittedBy": "string (user ID)",
-  "attachmentLink": "string (Google Drive link)",
+   "attachmentLink": "string (Cloudinary URL)",
   "teacherReply": "string",
   "repliedBy": "string (user ID)",
   "createdAt": "date",
@@ -291,7 +291,7 @@ npm run build
   "tags": "string",
   "uploadedBy": "string (user ID)",
   "uploaderName": "string",
-  "fileLink": "string (Google Drive link)",
+   "fileLink": "string (Cloudinary URL)",
   "type": "string (student|teacher)",
   "isOfficial": "boolean",
   "createdAt": "date"
@@ -339,8 +339,10 @@ SMTP_USER=your-email@gmail.com
 SMTP_PASS=your-app-password
 SMTP_FROM=noreply@studentsupporthub.com
 
-# Google Drive Configuration
-GOOGLE_APPLICATION_CREDENTIALS=./config/google-credentials.json
+# Cloudinary Configuration
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-cloudinary-api-key
+CLOUDINARY_API_SECRET=your-cloudinary-api-secret
 
 # Frontend Configuration
 VITE_API_URL=http://localhost:3000/api
@@ -419,10 +421,10 @@ firebase deploy
 - Check `FIREBASE_PROJECT_ID` in `.env`
 - Ensure Firebase Firestore is enabled in your project
 
-**2. Google Drive Upload Fails**
-- Confirm `google-credentials.json` is properly placed
-- Verify Google Drive API is enabled in Google Cloud Console
-- Check service account has appropriate Drive permissions
+**2. Cloudinary Upload Fails**
+- Verify `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET` are set
+- Confirm the credentials are valid for the intended Cloudinary account
+- Check server logs for upload errors from Cloudinary SDK
 
 **3. Email Notifications Not Sending**
 - Verify SMTP credentials in `.env`
