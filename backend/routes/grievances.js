@@ -63,22 +63,24 @@ router.post('/', auth, requireRole('student'), upload.single('attachment'), asyn
 // GET /api/grievances - Get grievances
 router.get('/', auth, async (req, res) => {
   try {
-    let query;
+    let snapshot;
 
     if (req.user.role === 'student') {
-      query = db.collection('grievances')
+      snapshot = await db.collection('grievances')
         .where('submittedBy', '==', req.user._id)
-        .orderBy('createdAt', 'desc');
+        .get();
     } else if (req.user.role === 'teacher') {
-      query = db.collection('grievances')
-        .orderBy('createdAt', 'desc');
+      snapshot = await db.collection('grievances')
+        .orderBy('createdAt', 'desc')
+        .get();
+    } else {
+      return res.status(403).json({ error: 'Access denied' });
     }
 
-    const snapshot = await query.get();
     const grievances = snapshot.docs.map(doc => ({
       _id: doc.id,
       ...doc.data()
-    }));
+    })).sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
 
     res.json({ grievances });
   } catch (err) {
