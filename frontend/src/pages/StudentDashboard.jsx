@@ -25,8 +25,8 @@ const StudentDashboard = () => {
             {user.collegeId}
           </div>
           <div style={{ background: 'white', padding: '12px 24px', borderRadius: 'var(--radius-md)', fontWeight: 600 }}>
-            <span style={{ color: 'var(--text-muted)', fontSize: '13px', display: 'block' }}>Branch</span>
-            {user.branch}
+            <span style={{ color: 'var(--text-muted)', fontSize: '13px', display: 'block' }}>Department</span>
+            INFT
           </div>
           <div style={{ background: 'white', padding: '12px 24px', borderRadius: 'var(--radius-md)', fontWeight: 600 }}>
             <span style={{ color: 'var(--text-muted)', fontSize: '13px', display: 'block' }}>Semester</span>

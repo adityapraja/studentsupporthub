@@ -2,7 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const { auth } = require('../middleware/auth');
 const { db } = require('../config/firebase');
-const { uploadToGoogleDrive } = require('../utils/googleDrive');
+const { uploadToCloudinary, deleteFromCloudinary } = require('../utils/cloudinary');
 
 const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
@@ -10,7 +10,7 @@ const upload = multer({ dest: 'uploads/' });
 // POST /api/notes - Upload a note
 router.post('/', auth, upload.single('file'), async (req, res) => {
   try {
-    const { title, subject, semester, branch, tags } = req.body;
+    const { title, subject, semester, tags } = req.body;
 
     if (!title || !subject) {
       return res.status(400).json({ error: 'Title and subject are required' });
@@ -20,17 +20,18 @@ router.post('/', auth, upload.single('file'), async (req, res) => {
       return res.status(400).json({ error: 'File is required' });
     }
 
-    const driveResult = await uploadToGoogleDrive(req.file, req.user.role);
+    const cloudinaryResult = await uploadToCloudinary(req.file, req.user.role);
 
     const noteData = {
       title,
       subject,
       semester: semester || '',
-      branch: branch || '',
+      branch: 'INFT',
       tags: tags || '',
       uploadedBy: req.user._id,
       uploaderName: req.user.name,
-      fileLink: driveResult.webViewLink,
+      fileLink: cloudinaryResult.secureUrl,
+      cloudinaryPublicId: cloudinaryResult.publicId,
       type: req.user.role,
       isOfficial: req.user.role === 'teacher',
       createdAt: new Date().toISOString()
@@ -105,6 +106,15 @@ router.delete('/:id', auth, async (req, res) => {
     const noteData = doc.data();
     if (noteData.uploadedBy !== req.user._id) {
       return res.status(403).json({ error: 'You can only delete your own notes' });
+    }
+
+    // Best-effort cleanup in Cloudinary (old notes may not have this field)
+    if (noteData.cloudinaryPublicId) {
+      try {
+        await deleteFromCloudinary(noteData.cloudinaryPublicId);
+      } catch (cloudErr) {
+        console.error('Cloudinary delete failed:', cloudErr);
+      }
     }
 
     await docRef.delete();

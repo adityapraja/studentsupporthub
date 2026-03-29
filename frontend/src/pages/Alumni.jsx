@@ -24,8 +24,7 @@ const Alumni = () => {
 
   const filteredAlumni = alumniItems.filter(a => 
     a.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    a.company?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    a.branch.toLowerCase().includes(searchQuery.toLowerCase())
+    a.company?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -41,7 +40,7 @@ const Alumni = () => {
         <input 
           type="text" 
           className="form-input" 
-          placeholder="Search by name, company, or branch..." 
+          placeholder="Search by name or company..." 
           style={{ paddingLeft: '48px' }}
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
@@ -75,7 +74,7 @@ const Alumni = () => {
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '14px', color: 'var(--text-muted)', marginBottom: '24px', flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <GraduationCap size={16} /> B.E. {a.branch} (Batch of {a.graduationYear})
+                  <GraduationCap size={16} /> B.E. INFT (Batch of {a.graduationYear || a.batch})
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <MapPin size={16} /> {a.location || 'Not Specified'}

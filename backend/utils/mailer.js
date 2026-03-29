@@ -10,12 +10,12 @@ const transporter = nodemailer.createTransport({
 
 const sendOTPEmail = async (to, otp) => {
   const mailOptions = {
-    from: `"Campus Connect" <${process.env.EMAIL_USER}>`,
+    from: `"Student Support Hub" <${process.env.EMAIL_USER}>`,
     to,
-    subject: 'Campus Connect - Your OTP Code',
+    subject: 'Student Support Hub - Your OTP Code',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 480px; margin: auto; padding: 24px; border: 1px solid #e0e0e0; border-radius: 8px;">
-        <h2 style="color: #2c3e50;">Campus Connect</h2>
+        <h2 style="color: #2c3e50;">Student Support Hub</h2>
         <p>Your OTP for login is:</p>
         <h1 style="text-align: center; color: #3498db; letter-spacing: 8px; font-size: 36px;">${otp}</h1>
         <p>This OTP is valid for <strong>10 minutes</strong>.</p>
@@ -29,7 +29,7 @@ const sendOTPEmail = async (to, otp) => {
 
 const sendGrievanceNotification = async (grievance) => {
   const mailOptions = {
-    from: `"Campus Connect" <${process.env.EMAIL_USER}>`,
+    from: `"Student Support Hub" <${process.env.EMAIL_USER}>`,
     to: process.env.AUTHORITY_EMAIL,
     subject: `New Grievance: ${grievance.title}`,
     html: `
@@ -41,7 +41,7 @@ const sendGrievanceNotification = async (grievance) => {
           <tr><td style="padding: 8px; font-weight: bold;">Description:</td><td style="padding: 8px;">${grievance.description}</td></tr>
           <tr><td style="padding: 8px; font-weight: bold;">Status:</td><td style="padding: 8px;">${grievance.status}</td></tr>
         </table>
-        <p style="color: #999; font-size: 12px; margin-top: 16px;">Please log in to Campus Connect to review and respond.</p>
+        <p style="color: #999; font-size: 12px; margin-top: 16px;">Please log in to Student Support Hub to review and respond.</p>
       </div>
     `
   };

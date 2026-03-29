@@ -26,7 +26,7 @@ const TeacherDashboard = () => {
           </div>
           <div style={{ background: 'rgba(255,255,255,0.1)', color: 'white', padding: '12px 24px', borderRadius: 'var(--radius-md)', fontWeight: 600 }}>
             <span style={{ color: 'var(--gray-400)', fontSize: '13px', display: 'block' }}>Department</span>
-            {user.branch}
+            INFT
           </div>
         </div>
       </div>

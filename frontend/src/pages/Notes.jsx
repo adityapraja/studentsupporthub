@@ -15,7 +15,6 @@ const Notes = () => {
   const [uploadTitle, setUploadTitle] = useState('');
   const [uploadSubject, setUploadSubject] = useState('');
   const [uploadSemester, setUploadSemester] = useState('');
-  const [uploadBranch, setUploadBranch] = useState('');
   const [uploadTags, setUploadTags] = useState('');
   const [uploadLoading, setUploadLoading] = useState(false);
   const [error, setError] = useState('');
@@ -46,7 +45,6 @@ const Notes = () => {
     form.append('title', uploadTitle);
     form.append('subject', uploadSubject);
     if (uploadSemester) form.append('semester', uploadSemester);
-    if (uploadBranch) form.append('branch', uploadBranch);
     if (uploadTags) form.append('tags', uploadTags);
     form.append('file', file);
 
@@ -57,7 +55,6 @@ const Notes = () => {
       setUploadTitle('');
       setUploadSubject('');
       setUploadSemester('');
-      setUploadBranch('');
       setUploadTags('');
       fetchNotes();
     } catch (err) {
@@ -107,15 +104,9 @@ const Notes = () => {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-              <div className="form-group">
-                <label className="form-label" style={{ fontWeight: 600 }}>Branch</label>
-                <input type="text" className="form-input" style={{ backgroundColor: '#ccc', border: 'none', padding: '12px', borderRadius: '8px' }} value={uploadBranch} onChange={e => setUploadBranch(e.target.value)} />
-              </div>
-              <div className="form-group">
-                <label className="form-label" style={{ fontWeight: 600 }}>Tags</label>
-                <input type="text" className="form-input" style={{ backgroundColor: '#ccc', border: 'none', padding: '12px', borderRadius: '8px' }} value={uploadTags} onChange={e => setUploadTags(e.target.value)} />
-              </div>
+            <div className="form-group">
+              <label className="form-label" style={{ fontWeight: 600 }}>Tags</label>
+              <input type="text" className="form-input" style={{ backgroundColor: '#ccc', border: 'none', padding: '12px', borderRadius: '8px' }} value={uploadTags} onChange={e => setUploadTags(e.target.value)} />
             </div>
 
             <div className="form-group">

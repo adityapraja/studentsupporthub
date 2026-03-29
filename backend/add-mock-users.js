@@ -17,7 +17,7 @@ async function addMockUsers() {
         role: 'student',
         collegeId: 'STU12345',
         semester: 'VI',
-        branch: 'CSE',
+        branch: 'INFT',
         phone: '1234567890',
         verified: true,
         createdAt: new Date().toISOString()
@@ -29,7 +29,7 @@ async function addMockUsers() {
         role: 'teacher',
         collegeId: 'TCH9876',
         semester: '',
-        branch: 'CSE',
+        branch: 'INFT',
         phone: '0987654321',
         verified: true,
         createdAt: new Date().toISOString()

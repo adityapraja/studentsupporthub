@@ -4,7 +4,7 @@ A comprehensive college platform for managing grievances, sharing notes, and con
 
 ## Overview
 
-**Student Support Hub** is a full-stack web application designed to streamline communication and resource sharing within a college community. It provides students, teachers, and alumni with dedicated features for submitting grievances, sharing educational materials, and maintaining professional connections.
+**Student Support Hub** is a full-stack web application designed to streamline communication and resource sharing for the INFT department community. It provides students, teachers, and alumni with dedicated features for submitting grievances, sharing educational materials, and maintaining professional connections.
 
 ## Features
 
@@ -29,7 +29,7 @@ A comprehensive college platform for managing grievances, sharing notes, and con
 #### **3. Notes & Study Materials**
 - Upload and share educational notes
 - Support for subject-specific organization
-- Semester and branch classification
+- Semester-based classification (INFT department only)
 - Tag-based organization and search
 - Automatic file hosting on Google Drive
 - Distinguish between student and official (teacher) notes
@@ -257,7 +257,7 @@ npm run build
   "role": "string (student|teacher|admin|alumni)",
   "phone": "string",
   "batch": "number",
-  "branch": "string",
+   "branch": "string (always INFT)",
   "createdAt": "date"
 }
 ```
@@ -287,7 +287,7 @@ npm run build
   "title": "string",
   "subject": "string",
   "semester": "string",
-  "branch": "string",
+   "branch": "string (always INFT)",
   "tags": "string",
   "uploadedBy": "string (user ID)",
   "uploaderName": "string",

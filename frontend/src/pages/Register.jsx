@@ -10,7 +10,7 @@ const Register = () => {
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     name: '', email: '', collegeId: '', 
-    semester: 'I', branch: 'CSE', phone: '', 
+    semester: 'I', phone: '', 
     password: '', confirmPassword: ''
   });
 
@@ -98,15 +98,6 @@ const Register = () => {
               </select>
             </div>
           )}
-
-          <div className="form-group">
-            <label className="form-label">Branch</label>
-            <select className="form-input" name="branch" value={formData.branch} onChange={handleChange}>
-              <option value="CSE">CSE</option>
-              <option value="ECE">ECE</option>
-              <option value="IT">IT</option>
-            </select>
-          </div>
 
           <div className="form-group" style={{ gridColumn: '1 / -1' }}>
             <label className="form-label">Phone Number</label>

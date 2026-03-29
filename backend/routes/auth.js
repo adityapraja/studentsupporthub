@@ -15,7 +15,7 @@ function generateOTP() {
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, role, collegeId, semester, branch, phone } = req.body;
+    const { name, email, password, role, collegeId, semester, phone } = req.body;
 
     if (!name || !email || !password || !role) {
       return res.status(400).json({ error: 'Name, email, password, and role are required' });
@@ -51,7 +51,7 @@ router.post('/register', async (req, res) => {
       role,
       collegeId: collegeId || '',
       semester: semester || '',
-      branch: branch || '',
+      branch: 'INFT',
       phone: phone || '',
       verified: false,
       otp,
@@ -122,7 +122,7 @@ router.post('/verify-otp', async (req, res) => {
         role: userData.role,
         collegeId: userData.collegeId,
         semester: userData.semester,
-        branch: userData.branch,
+        branch: userData.branch || 'INFT',
         phone: userData.phone
       }
     });
@@ -213,7 +213,7 @@ router.post('/login', async (req, res) => {
         role: userData.role,
         collegeId: userData.collegeId,
         semester: userData.semester,
-        branch: userData.branch,
+        branch: userData.branch || 'INFT',
         phone: userData.phone
       }
     });
@@ -246,7 +246,7 @@ router.get('/me', async (req, res) => {
         role: userData.role,
         collegeId: userData.collegeId,
         semester: userData.semester,
-        branch: userData.branch,
+        branch: userData.branch || 'INFT',
         phone: userData.phone
       }
     });
@@ -262,12 +262,12 @@ router.get('/mock-setup', async (req, res) => {
     const users = [
       {
         name: 'Demo Student', email: 'student@vcet.edu.in', password: hashedPassword,
-        role: 'student', collegeId: 'STU12345', semester: 'VI', branch: 'CSE',
+        role: 'student', collegeId: 'STU12345', semester: 'VI', branch: 'INFT',
         phone: '1234567890', verified: true, createdAt: new Date().toISOString()
       },
       {
         name: 'Demo Teacher', email: 'teacher@vcet.edu.in', password: hashedPassword,
-        role: 'teacher', collegeId: 'TCH9876', semester: '', branch: 'CSE',
+        role: 'teacher', collegeId: 'TCH9876', semester: '', branch: 'INFT',
         phone: '0987654321', verified: true, createdAt: new Date().toISOString()
       }
     ];
