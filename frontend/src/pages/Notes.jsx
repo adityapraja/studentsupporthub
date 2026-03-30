@@ -3,6 +3,16 @@ import api from '../services/api';
 import { AuthContext } from '../context/AuthContext';
 import { Search, Download, FileText, Upload } from 'lucide-react';
 
+const SEM_IV_SUBJECTS = [
+  'Applied mathematics-II',
+  'Operating System',
+  'Computer Network & Network Design',
+  'Microprocessor and Microcontroller.',
+  'Management Skills.',
+  'Programming Paradigm',
+  'Design Thinking'
+];
+
 const Notes = () => {
   const { user } = useContext(AuthContext);
   const [notes, setNotes] = useState([]);
@@ -66,8 +76,29 @@ const Notes = () => {
 
   const filteredNotes = notes.filter(n =>
     n.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    n.uploadedBy?.name.toLowerCase().includes(searchQuery.toLowerCase())
+    n.uploadedBy?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    n.subject?.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const groupedNotes = filteredNotes.reduce((groups, note) => {
+    const subject = note.subject?.trim() || 'Uncategorized';
+    if (!groups[subject]) groups[subject] = [];
+    groups[subject].push(note);
+    return groups;
+  }, {});
+
+  const sortedSubjects = Object.keys(groupedNotes).sort((a, b) => {
+    const aIndex = SEM_IV_SUBJECTS.indexOf(a);
+    const bIndex = SEM_IV_SUBJECTS.indexOf(b);
+
+    const aInList = aIndex !== -1;
+    const bInList = bIndex !== -1;
+
+    if (aInList && bInList) return aIndex - bIndex;
+    if (aInList) return -1;
+    if (bInList) return 1;
+    return a.localeCompare(b);
+  });
 
   return (
     <div>
@@ -96,7 +127,18 @@ const Notes = () => {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
               <div className="form-group">
                 <label className="form-label" style={{ fontWeight: 600 }}>Subject</label>
-                <input type="text" className="form-input" style={{ backgroundColor: '#ccc', border: 'none', padding: '12px', borderRadius: '8px' }} value={uploadSubject} onChange={e => setUploadSubject(e.target.value)} required />
+                <select
+                  className="form-input"
+                  style={{ backgroundColor: '#ccc', border: 'none', padding: '12px', borderRadius: '8px' }}
+                  value={uploadSubject}
+                  onChange={e => setUploadSubject(e.target.value)}
+                  required
+                >
+                  <option value="" disabled>Select Semester IV subject</option>
+                  {SEM_IV_SUBJECTS.map((subject) => (
+                    <option key={subject} value={subject}>{subject}</option>
+                  ))}
+                </select>
               </div>
               <div className="form-group">
                 <label className="form-label" style={{ fontWeight: 600 }}>Semester</label>
@@ -136,7 +178,7 @@ const Notes = () => {
         />
       </div>
 
-      {/* Notes Grid */}
+      {/* Notes by Subject */}
       {loading ? (
         <div className="spinner" style={{ margin: '40px auto' }}></div>
       ) : filteredNotes.length === 0 ? (
@@ -144,36 +186,45 @@ const Notes = () => {
           <p style={{ color: 'var(--text-muted)' }}>No study materials found.</p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
-          {filteredNotes.map(n => (
-            <div key={n._id} className="card" style={{ display: 'flex', flexDirection: 'column' }}>
-              <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
-                <div style={{ width: '48px', height: '48px', background: 'var(--primary-light)', color: 'var(--primary)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <FileText size={24} />
+        <div style={{ display: 'grid', gap: '28px' }}>
+          {sortedSubjects.map((subject) => (
+            <section key={subject}>
+              <h2 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '14px', color: 'var(--text-main)' }}>
+                {subject}
+              </h2>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
+                {groupedNotes[subject].map(n => (
+                  <div key={n._id} className="card" style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
+                      <div style={{ width: '48px', height: '48px', background: 'var(--primary-light)', color: 'var(--primary)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <FileText size={24} />
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px', marginBottom: '4px' }}>
+                          <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-main)', lineHeight: '1.4', margin: 0 }}>{n.title}</h3>
+                          {n.isOfficial && (
+                            <span style={{ fontSize: '11px', fontWeight: 700, backgroundColor: 'var(--success-light)', color: 'var(--success)', padding: '2px 8px', borderRadius: '12px', whiteSpace: 'nowrap' }}>
+                              ✓ Official
+                            </span>
+                          )}
+                        </div>
+                        <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0 }}>By: {n.uploadedBy?.name || 'Unknown'}</p>
+                        <p style={{ fontSize: '13px', color: 'var(--text-light)', margin: 0 }}>{new Date(n.createdAt).toLocaleDateString()}</p>
+                      </div>
+                    </div>
+                    <a
+                      href={n.fileLink}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="btn btn-primary"
+                      style={{ marginTop: 'auto', width: '100%' }}
+                    >
+                      <Download size={16} /> Download
+                    </a>
                 </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px', marginBottom: '4px' }}>
-                    <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-main)', lineHeight: '1.4', margin: 0 }}>{n.title}</h3>
-                    {n.isOfficial && (
-                      <span style={{ fontSize: '11px', fontWeight: 700, backgroundColor: 'var(--success-light)', color: 'var(--success)', padding: '2px 8px', borderRadius: '12px', whiteSpace: 'nowrap' }}>
-                        ✓ Official
-                      </span>
-                    )}
-                  </div>
-                  <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0 }}>By: {n.uploadedBy?.name || 'Unknown'}</p>
-                  <p style={{ fontSize: '13px', color: 'var(--text-light)', margin: 0 }}>{new Date(n.createdAt).toLocaleDateString()}</p>
-                </div>
+                ))}
               </div>
-              <a
-                href={n.fileLink}
-                target="_blank"
-                rel="noreferrer"
-                className="btn btn-primary"
-                style={{ marginTop: 'auto', width: '100%' }}
-              >
-                <Download size={16} /> Download
-              </a>
-            </div>
+            </section>
           ))}
         </div>
       )}
