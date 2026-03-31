@@ -1,4 +1,5 @@
 const express = require('express');
+const fs = require('fs');
 const multer = require('multer');
 const { auth, requireRole } = require('../middleware/auth');
 const { db } = require('../config/firebase');
@@ -15,6 +16,15 @@ router.post('/', auth, requireRole('student'), upload.single('attachment'), asyn
 
     if (!title || !category || !description) {
       return res.status(400).json({ error: 'Title, category, and description are required' });
+    }
+
+    const emailAttachments = [];
+    if (req.file?.path && fs.existsSync(req.file.path)) {
+      emailAttachments.push({
+        filename: req.file.originalname || 'grievance-attachment',
+        content: fs.readFileSync(req.file.path),
+        contentType: req.file.mimetype || undefined
+      });
     }
 
     let attachmentLink = null;
@@ -45,7 +55,10 @@ router.post('/', auth, requireRole('student'), upload.single('attachment'), asyn
 
     // Send email notification to authority
     try {
-      await sendGrievanceNotification({ ...grievanceData, id: docRef.id });
+      await sendGrievanceNotification({
+        grievance: { ...grievanceData, id: docRef.id },
+        attachments: emailAttachments
+      });
     } catch (emailErr) {
       console.error('Email notification failed:', emailErr);
     }
