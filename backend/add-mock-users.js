@@ -23,6 +23,18 @@ async function addMockUsers() {
         createdAt: new Date().toISOString()
       },
       {
+        name: 'Demo Student 2',
+        email: 'student2@vcet.edu.in',
+        password: hashedPassword,
+        role: 'student',
+        collegeId: 'STU67890',
+        semester: 'IV',
+        branch: 'INFT',
+        phone: '9876543210',
+        verified: true,
+        createdAt: new Date().toISOString()
+      },
+      {
         name: 'Demo Teacher',
         email: 'teacher@vcet.edu.in',
         password: hashedPassword,
@@ -53,11 +65,30 @@ async function addMockUsers() {
       batch.set(docRef, user);
     }
 
+    const clearCollection = async (collectionName) => {
+      const snapshot = await db.collection(collectionName).get();
+      if (snapshot.empty) return 0;
+
+      const deleteBatch = db.batch();
+      snapshot.docs.forEach(doc => deleteBatch.delete(doc.ref));
+      await deleteBatch.commit();
+      return snapshot.size;
+    };
+
+    const deletedNotes = await clearCollection('notes');
+    const deletedGrievances = await clearCollection('grievances');
+
     await batch.commit();
     console.log('Successfully added mock users to database.');
+    console.log(`Cleared ${deletedNotes} notes.`);
+    console.log(`Cleared ${deletedGrievances} grievances.`);
     console.log('-------------------------------------------');
     console.log('Student Login:');
     console.log('Email: student@vcet.edu.in');
+    console.log('Password: password123');
+    console.log('-------------------------------------------');
+    console.log('Student 2 Login:');
+    console.log('Email: student2@vcet.edu.in');
     console.log('Password: password123');
     console.log('-------------------------------------------');
     console.log('Teacher Login:');

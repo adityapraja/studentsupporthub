@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import api from '../services/api';
 import { AuthContext } from '../context/AuthContext';
-import { Search, Download, FileText, Upload } from 'lucide-react';
+import { Search, Download, FileText, Upload, Flag, AlertTriangle, Trash2, ShieldCheck } from 'lucide-react';
 
 const SEM_IV_SUBJECTS = [
   'Applied mathematics-II',
@@ -28,6 +28,8 @@ const Notes = () => {
   const [uploadTags, setUploadTags] = useState('');
   const [uploadLoading, setUploadLoading] = useState(false);
   const [error, setError] = useState('');
+  const [actionError, setActionError] = useState('');
+  const [actionLoadingId, setActionLoadingId] = useState('');
 
   useEffect(() => {
     fetchNotes();
@@ -71,6 +73,48 @@ const Notes = () => {
       setError(err.response?.data?.error || 'Failed to upload note');
     } finally {
       setUploadLoading(false);
+    }
+  };
+
+  const handleReport = async (noteId) => {
+    setActionError('');
+    setActionLoadingId(`report-${noteId}`);
+
+    try {
+      await api.patch(`/notes/${noteId}/report`);
+      await fetchNotes();
+    } catch (err) {
+      setActionError(err.response?.data?.error || 'Failed to report note');
+    } finally {
+      setActionLoadingId('');
+    }
+  };
+
+  const handleDeleteReported = async (noteId) => {
+    setActionError('');
+    setActionLoadingId(`delete-${noteId}`);
+
+    try {
+      await api.delete(`/notes/${noteId}`);
+      await fetchNotes();
+    } catch (err) {
+      setActionError(err.response?.data?.error || 'Failed to delete note');
+    } finally {
+      setActionLoadingId('');
+    }
+  };
+
+  const handleIgnoreReport = async (noteId) => {
+    setActionError('');
+    setActionLoadingId(`ignore-${noteId}`);
+
+    try {
+      await api.patch(`/notes/${noteId}/ignore-report`);
+      await fetchNotes();
+    } catch (err) {
+      setActionError(err.response?.data?.error || 'Failed to ignore report');
+    } finally {
+      setActionLoadingId('');
     }
   };
 
@@ -179,6 +223,12 @@ const Notes = () => {
       </div>
 
       {/* Notes by Subject */}
+      {actionError && (
+        <div style={{ background: 'var(--danger-light)', color: 'var(--danger)', padding: '12px', borderRadius: 'var(--radius-sm)', marginBottom: '16px' }}>
+          {actionError}
+        </div>
+      )}
+
       {loading ? (
         <div className="spinner" style={{ margin: '40px auto' }}></div>
       ) : filteredNotes.length === 0 ? (
@@ -194,7 +244,16 @@ const Notes = () => {
               </h2>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
                 {groupedNotes[subject].map(n => (
-                  <div key={n._id} className="card" style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div
+                    key={n._id}
+                    className="card"
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      border: user?.role === 'teacher' && n.isReported ? '1px solid var(--danger)' : undefined,
+                      background: user?.role === 'teacher' && n.isReported ? 'var(--danger-light)' : undefined
+                    }}
+                  >
                     <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
                       <div style={{ width: '48px', height: '48px', background: 'var(--primary-light)', color: 'var(--primary)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                         <FileText size={24} />
@@ -208,7 +267,12 @@ const Notes = () => {
                             </span>
                           )}
                         </div>
-                        <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0 }}>By: {n.uploadedBy?.name || 'Unknown'}</p>
+                        {user?.role === 'teacher' && n.isReported && (
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 700, color: 'var(--danger)', marginBottom: '6px' }}>
+                            <AlertTriangle size={14} /> Reported ({n.reportCount || 1})
+                          </div>
+                        )}
+                        <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0 }}>By: {n.uploaderName || 'Unknown'}</p>
                         <p style={{ fontSize: '13px', color: 'var(--text-light)', margin: 0 }}>{new Date(n.createdAt).toLocaleDateString()}</p>
                       </div>
                     </div>
@@ -221,6 +285,45 @@ const Notes = () => {
                     >
                       <Download size={16} /> Download
                     </a>
+
+                    {user?.role === 'student' && n.uploadedBy !== user.id && (
+                      <button
+                        className="btn"
+                        onClick={() => handleReport(n._id)}
+                        disabled={n.hasReportedByCurrentUser || actionLoadingId === `report-${n._id}`}
+                        style={{
+                          marginTop: '10px',
+                          width: '100%',
+                          backgroundColor: n.hasReportedByCurrentUser ? 'var(--border)' : 'var(--danger-light)',
+                          color: n.hasReportedByCurrentUser ? 'var(--text-muted)' : 'var(--danger)',
+                          border: 'none'
+                        }}
+                      >
+                        <Flag size={16} />
+                        {n.hasReportedByCurrentUser ? 'Reported' : (actionLoadingId === `report-${n._id}` ? 'Reporting...' : 'Report')}
+                      </button>
+                    )}
+
+                    {user?.role === 'teacher' && n.isReported && (
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '10px' }}>
+                        <button
+                          className="btn"
+                          onClick={() => handleIgnoreReport(n._id)}
+                          disabled={Boolean(actionLoadingId)}
+                          style={{ width: '100%', backgroundColor: 'var(--warning-light)', color: 'var(--warning)', border: 'none' }}
+                        >
+                          <ShieldCheck size={16} /> {actionLoadingId === `ignore-${n._id}` ? 'Ignoring...' : 'Ignore Report'}
+                        </button>
+                        <button
+                          className="btn"
+                          onClick={() => handleDeleteReported(n._id)}
+                          disabled={Boolean(actionLoadingId)}
+                          style={{ width: '100%', backgroundColor: 'var(--danger)', color: 'white', border: 'none' }}
+                        >
+                          <Trash2 size={16} /> {actionLoadingId === `delete-${n._id}` ? 'Deleting...' : 'Delete Reported Note'}
+                        </button>
+                      </div>
+                    )}
                 </div>
                 ))}
               </div>

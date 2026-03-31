@@ -34,6 +34,9 @@ router.post('/', auth, upload.single('file'), async (req, res) => {
       cloudinaryPublicId: cloudinaryResult.publicId,
       type: req.user.role,
       isOfficial: req.user.role === 'teacher',
+      isReported: false,
+      reportCount: 0,
+      reportedBy: [],
       createdAt: new Date().toISOString()
     };
 
@@ -53,15 +56,24 @@ router.post('/', auth, upload.single('file'), async (req, res) => {
 router.get('/', auth, async (req, res) => {
   try {
     const { type, search, sortBy } = req.query;
+    const currentUserId = req.user._id;
 
     let query = db.collection('notes').orderBy('createdAt', 'desc');
 
     // We'll filter client-side for search since Firestore doesn't support full-text
     const snapshot = await query.get();
-    let notes = snapshot.docs.map(doc => ({
-      _id: doc.id,
-      ...doc.data()
-    }));
+    let notes = snapshot.docs.map(doc => {
+      const noteData = doc.data();
+      const reportedBy = Array.isArray(noteData.reportedBy) ? noteData.reportedBy : [];
+
+      return {
+        _id: doc.id,
+        ...noteData,
+        reportCount: noteData.reportCount || 0,
+        isReported: Boolean(noteData.isReported),
+        hasReportedByCurrentUser: reportedBy.includes(currentUserId)
+      };
+    });
 
     // Filter by type if specified
     if (type && ['student', 'teacher'].includes(type)) {
@@ -93,6 +105,84 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
+// PATCH /api/notes/:id/report - Report a note (students only)
+router.patch('/:id/report', auth, async (req, res) => {
+  try {
+    if (req.user.role !== 'student') {
+      return res.status(403).json({ error: 'Only students can report notes' });
+    }
+
+    const docRef = db.collection('notes').doc(req.params.id);
+    const doc = await docRef.get();
+
+    if (!doc.exists) {
+      return res.status(404).json({ error: 'Note not found' });
+    }
+
+    const noteData = doc.data();
+
+    if (noteData.uploadedBy === req.user._id) {
+      return res.status(400).json({ error: 'You cannot report your own note' });
+    }
+
+    const reportedBy = Array.isArray(noteData.reportedBy) ? noteData.reportedBy : [];
+    if (reportedBy.includes(req.user._id)) {
+      return res.status(400).json({ error: 'You have already reported this note' });
+    }
+
+    const updatedReportedBy = [...reportedBy, req.user._id];
+
+    await docRef.update({
+      reportedBy: updatedReportedBy,
+      reportCount: updatedReportedBy.length,
+      isReported: true,
+      lastReportedAt: new Date().toISOString()
+    });
+
+    res.json({
+      message: 'Note reported successfully',
+      reportCount: updatedReportedBy.length
+    });
+  } catch (err) {
+    console.error('Report note error:', err);
+    res.status(500).json({ error: 'Failed to report note' });
+  }
+});
+
+// PATCH /api/notes/:id/ignore-report - Ignore a report (teachers only)
+router.patch('/:id/ignore-report', auth, async (req, res) => {
+  try {
+    if (req.user.role !== 'teacher') {
+      return res.status(403).json({ error: 'Only teachers can ignore reports' });
+    }
+
+    const docRef = db.collection('notes').doc(req.params.id);
+    const doc = await docRef.get();
+
+    if (!doc.exists) {
+      return res.status(404).json({ error: 'Note not found' });
+    }
+
+    const noteData = doc.data();
+    if (!noteData.isReported) {
+      return res.status(400).json({ error: 'This note is not currently reported' });
+    }
+
+    await docRef.update({
+      isReported: false,
+      reportCount: 0,
+      reportedBy: [],
+      ignoredAt: new Date().toISOString(),
+      ignoredBy: req.user._id
+    });
+
+    res.json({ message: 'Report ignored successfully' });
+  } catch (err) {
+    console.error('Ignore report error:', err);
+    res.status(500).json({ error: 'Failed to ignore report' });
+  }
+});
+
 // DELETE /api/notes/:id - Delete a note (only by uploader)
 router.delete('/:id', auth, async (req, res) => {
   try {
@@ -104,8 +194,11 @@ router.delete('/:id', auth, async (req, res) => {
     }
 
     const noteData = doc.data();
-    if (noteData.uploadedBy !== req.user._id) {
-      return res.status(403).json({ error: 'You can only delete your own notes' });
+    const isUploader = noteData.uploadedBy === req.user._id;
+    const isTeacherRemovingReported = req.user.role === 'teacher' && noteData.isReported;
+
+    if (!isUploader && !isTeacherRemovingReported) {
+      return res.status(403).json({ error: 'You are not allowed to delete this note' });
     }
 
     // Best-effort cleanup in Cloudinary (old notes may not have this field)
@@ -118,7 +211,9 @@ router.delete('/:id', auth, async (req, res) => {
     }
 
     await docRef.delete();
-    res.json({ message: 'Note deleted successfully' });
+    res.json({
+      message: isTeacherRemovingReported ? 'Reported note removed successfully' : 'Note deleted successfully'
+    });
   } catch (err) {
     console.error('Delete note error:', err);
     res.status(500).json({ error: 'Failed to delete note' });

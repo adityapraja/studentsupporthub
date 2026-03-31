@@ -11,21 +11,28 @@ const TeacherDashboard = () => {
   return (
     <>
       {/* Hero Section */}
-      <div style={{ padding: '40px', background: 'var(--gray-800)', borderRadius: 'var(--radius-lg)', marginBottom: '32px' }}>
+      <div
+        style={{
+          padding: '40px',
+          background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%)',
+          borderRadius: 'var(--radius-lg)',
+          marginBottom: '32px'
+        }}
+      >
         <h1 style={{ fontSize: '32px', fontWeight: 800, color: 'white', marginBottom: '8px' }}>
           Welcome back, Prof. {user.name}
         </h1>
-        <p style={{ color: 'var(--gray-300)', fontSize: '18px' }}>
+        <p style={{ color: 'var(--primary-light)', fontSize: '18px' }}>
           Teacher Dashboard
         </p>
         
         <div style={{ display: 'flex', gap: '24px', marginTop: '24px', flexWrap: 'wrap' }}>
-          <div style={{ background: 'rgba(255,255,255,0.1)', color: 'white', padding: '12px 24px', borderRadius: 'var(--radius-md)', fontWeight: 600 }}>
-            <span style={{ color: 'var(--gray-400)', fontSize: '13px', display: 'block' }}>Faculty ID</span>
+          <div style={{ background: 'rgba(255,255,255,0.16)', color: 'white', padding: '12px 24px', borderRadius: 'var(--radius-md)', fontWeight: 600 }}>
+            <span style={{ color: 'var(--primary-light)', fontSize: '13px', display: 'block' }}>Faculty ID</span>
             {user.collegeId}
           </div>
-          <div style={{ background: 'rgba(255,255,255,0.1)', color: 'white', padding: '12px 24px', borderRadius: 'var(--radius-md)', fontWeight: 600 }}>
-            <span style={{ color: 'var(--gray-400)', fontSize: '13px', display: 'block' }}>Department</span>
+          <div style={{ background: 'rgba(255,255,255,0.16)', color: 'white', padding: '12px 24px', borderRadius: 'var(--radius-md)', fontWeight: 600 }}>
+            <span style={{ color: 'var(--primary-light)', fontSize: '13px', display: 'block' }}>Department</span>
             INFT
           </div>
         </div>
