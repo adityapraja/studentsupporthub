@@ -1,5 +1,5 @@
-import React, { useContext } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useContext, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthContext } from './context/AuthContext';
 
 // Layouts
@@ -34,9 +34,44 @@ const PublicRoute = ({ children }) => {
   return children;
 };
 
+const RouteTitleManager = () => {
+  const location = useLocation();
+  const { user } = useContext(AuthContext);
+
+  useEffect(() => {
+    const appName = 'Student Support Hub';
+    let pageTitle = appName;
+
+    if (location.pathname === '/') {
+      pageTitle = `Login | ${appName}`;
+    } else if (location.pathname === '/register') {
+      pageTitle = `Register | ${appName}`;
+    } else if (location.pathname === '/otp') {
+      pageTitle = `OTP Verification | ${appName}`;
+    } else if (location.pathname === '/dashboard') {
+      pageTitle = user?.role === 'teacher'
+        ? `Teacher Dashboard | ${appName}`
+        : `Student Dashboard | ${appName}`;
+    } else if (location.pathname === '/grievances') {
+      pageTitle = `Grievances | ${appName}`;
+    } else if (location.pathname.startsWith('/grievances/')) {
+      pageTitle = `Grievance Details | ${appName}`;
+    } else if (location.pathname === '/notes') {
+      pageTitle = `Notes | ${appName}`;
+    } else if (location.pathname === '/alumni') {
+      pageTitle = `Alumni | ${appName}`;
+    }
+
+    document.title = pageTitle;
+  }, [location.pathname, user?.role]);
+
+  return null;
+};
+
 function App() {
   return (
     <BrowserRouter>
+      <RouteTitleManager />
       <Routes>
         {/* Public Routes */}
         <Route element={<AuthLayout />}>
